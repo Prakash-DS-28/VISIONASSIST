@@ -1,169 +1,312 @@
-# VisionAssist
+# 🦾 VisionAssist
 
-Voice-controlled object finder for accessibility. Say **"find my water bottle"**,
-and VisionAssist listens, searches the live camera feed using computer vision,
-and speaks back where the object is (left / center / right, and how far).
-Problem Statement
+### *AI-Powered Object Finder for the Visually Impaired*
 
-Losing track of everyday objects — a water bottle, phone, keys, remote — is a
-small daily friction for most people, but a real accessibility barrier for
-visually impaired users, who cannot visually scan a room to relocate items.
-Existing assistive solutions are typically either expensive dedicated hardware
-(smart glasses, specialized sensors) or apps that require pointing a phone
-camera and reading on-screen text — neither is fast, hands-free, nor genuinely
-usable by someone who can't see the screen in the first place.
+<p align="center">
+  <img src="assets/logo.png" width="180"/>
+</p>
 
-Objective
+<p align="center">
 
-Build a lightweight, hands-free, voice-in / voice-out system that lets a user
-ask for an object by name and receive spoken, directional guidance to it in
-real time — using only a standard webcam and pretrained, off-the-shelf
-computer vision models, deployable on ordinary consumer hardware with no
-specialized sensors and no model training required.
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge\&logo=python)
+![YOLOv8](https://img.shields.io/badge/YOLO-v8-green?style=for-the-badge)
+![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-red?style=for-the-badge\&logo=opencv)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![HackZen](https://img.shields.io/badge/HackZen-2026-orange?style=for-the-badge)
 
-Proposed Solution
+</p>
 
-VisionAssist runs a continuous voice-in / vision / voice-out loop:
+---
 
+# 📌 Overview
 
-Listen — the user speaks a command ("find my water bottle")
-Understand — the phrase is mapped to a known object category ("bottle")
-See — a real-time object detector scans the webcam feed, filtered to
-just that category, so it isn't distracted by irrelevant objects
-Localize — the detected object's position and size in the frame are
-converted into simple spatial guidance: left / center / right, and
-near / medium / far
-Speak — the guidance is read aloud immediately, and continues updating
-live as the object or the user moves, until the user asks to find something
-else
+**VisionAssist** is an AI-powered accessibility assistant that helps visually impaired individuals locate everyday objects using **Computer Vision**, **Artificial Intelligence**, and **Voice Guidance**.
 
+The user simply asks for an object, such as:
 
-The entire pipeline is built on pretrained, open-source models — no custom
-training, no labeled dataset collection, and no cloud infrastructure beyond a
-single free speech-to-text API call per voice command.
+> 🎤 *"Find my water bottle."*
 
-Technologies Used
+The system detects the object in real time using **YOLOv8**, identifies its position, and provides spoken navigation instructions until the object is within reach.
 
-ComponentTechnologyObject detectionUltralytics YOLOv8n — pretrained on COCODeep learning backendPyTorchComputer vision / video I/OOpenCVSpeech-to-textSpeechRecognition (Google Web Speech API)Text-to-speechpyttsx3 (fully offline)LanguagePython 3
+---
 
-Dataset
+# 🎯 Problem Statement
 
-No custom dataset or training was required. Object detection uses
-YOLOv8n pretrained on the COCO dataset
-(80 everyday object classes — bottle, cup, cell phone, laptop, backpack, book,
-chair, and more), used directly via Ultralytics' pretrained weights.
+Visually impaired individuals often face difficulty locating common objects such as:
 
-Methodology / Model Architecture
+* 💧 Water Bottle
+* 📱 Mobile Phone
+* 💻 Laptop
+* 🎒 Backpack
+* 🪑 Chair
+* ☕ Cup
 
-                ┌───────────────┐
-   Microphone → │ voice_input.py │ → raw speech → text (Google Speech API)
-                └───────┬────────┘
-                        ▼
-                ┌────────────────┐
-                │ object_mapper  │  "water bottle" → COCO class "bottle"
-                └───────┬────────┘
-                        ▼
-     Webcam → ┌──────────────────┐
-     frames   │   detector.py     │  YOLOv8n inference, filtered to
-              │   (YOLOv8n, COCO) │  the requested class only
-              └───────┬───────────┘
-                        ▼
-                ┌────────────────┐
-                │  navigator.py   │  bounding box → zone (L/C/R)
-                │                 │  + distance (near/med/far)
-                └───────┬────────┘
-                        ▼
-                ┌────────────────┐
-   Speaker  ←   │ voice_output.py │  spoken guidance, de-duplicated
-                └────────────────┘  so it only re-announces on change
+Searching for these objects without assistance can be time-consuming and frustrating.
 
-Key design decisions:
+---
 
+# 💡 Our Solution
 
-Class-filtered detection — once a target object is known, YOLO is asked
-to detect only that class, improving speed and avoiding false alarms from
-unrelated objects in frame.
-Bounding-box-based distance estimate — instead of a separate depth model
-(extra latency, extra failure point), distance is approximated from how much
-of the frame the object's bounding box occupies: a larger box means the
-object is closer. This is a well-established lightweight heuristic that
-avoids needing monocular depth estimation for a real-time, resource-constrained
-demo.
-State-change-only speech — guidance is only re-spoken when the object's
-zone or distance actually changes, preventing the assistant from repeating
-itself every frame.
+VisionAssist combines:
 
+* 🎤 Voice Commands
+* 👁️ Real-Time Computer Vision
+* 🧠 Artificial Intelligence
+* 🔊 Voice Guidance
 
-Installation & Setup Instructions
+to help users quickly locate the requested object.
 
-bashgit clone <your-repo-url>
+---
+
+# ✨ Features
+
+✅ Voice Command Support
+
+✅ Real-Time Object Detection
+
+✅ AI-Based Object Search
+
+✅ Left / Right / Center Navigation
+
+✅ Approximate Distance Estimation
+
+✅ Voice Feedback
+
+✅ Live Camera Detection
+
+✅ Lightweight & Fast
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                 User
+
+                   │
+
+         "Find my Bottle"
+
+                   │
+
+         Speech Recognition
+
+                   │
+
+         Object Extraction
+
+                   │
+
+           Webcam Input
+
+                   │
+
+          YOLOv8 Detection
+
+                   │
+
+        Requested Object Found?
+
+            │             │
+           No             Yes
+            │              │
+      Continue Search      │
+                           ▼
+                  Position Detection
+
+                           ▼
+                 Distance Estimation
+
+                           ▼
+                  Voice Navigation
+
+                           ▼
+                   Object Reached
+```
+
+---
+
+# 🖥️ Tech Stack
+
+| Technology        | Purpose              |
+| ----------------- | -------------------- |
+| Python            | Backend              |
+| YOLOv8            | Object Detection     |
+| OpenCV            | Camera Processing    |
+| PyTorch           | Deep Learning        |
+| pyttsx3           | Text-to-Speech       |
+| SpeechRecognition | Voice Input          |
+| NumPy             | Numerical Operations |
+
+---
+
+# 📁 Project Structure
+
+```text
+VisionAssist/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── models/
+│   └── yolov8n.pt
+│
+├── src/
+│   ├── detector.py
+│   ├── navigator.py
+│   ├── voice_input.py
+│   ├── voice_output.py
+│   ├── object_mapper.py
+│   └── utils.py
+│
+├── assets/
+│   ├── logo.png
+│   └── screenshots/
+│
+├── outputs/
+│
+└── docs/
+```
+
+---
+
+# 🚀 Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/your-username/VisionAssist.git
+
 cd VisionAssist
+```
+
+Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
+Download the YOLOv8 model
 
-Note: pyaudio can require an extra system package on some platforms:
+```bash
+# Place yolov8n.pt inside the models/ directory
+```
 
+Run the application
 
-Windows: pip install pipwin && pipwin install pyaudio
-macOS: brew install portaudio && pip install pyaudio
-Linux: sudo apt-get install portaudio19-dev espeak-ng alsa-utils && pip install pyaudio
+```bash
+python app.py
+```
 
+---
 
+# 🎤 Example Usage
 
+User:
 
-models/yolov8n.pt (pretrained weights, ~6MB) auto-downloads on first run if
-not already present in the repo.
+> "Find my water bottle."
 
-Usage Instructions
+Assistant:
 
-bashpython app.py
+> 🔍 Searching for water bottle...
 
+> ✅ Bottle found.
 
-Press v in the video window, then speak a command, e.g.:
-"find my water bottle", "find my phone", "find my keyboard"
-VisionAssist confirms the search target out loud, then announces the
-object's location once detected — continuing to update live as it or you
-move.
-Say "find" followed by a different object at any time to switch targets.
-Press q to quit.
+> ⬅️ Move left.
 
+> ⬆️ Move forward.
 
-Supported objects (demo vocabulary): bottle, cup/mug, cell phone, laptop,
-backpack/bag, book, remote, keyboard, mouse, chair, clock, scissors, umbrella,
-handbag — easily extended by adding entries to KEYWORD_TO_COCO in
-src/object_mapper.py.
+> ✅ Bottle is within reach.
 
-Results and Outputs
+---
 
+# 📸 Demo
 
-Real-time detection at interactive frame rates on standard CPU hardware
-(tested at 416px YOLO inference resolution — no GPU required)
-Accurate left/center/right + near/medium/far spoken guidance for
-in-vocabulary objects across typical indoor lighting and clutter conditions
-Hands-free operation validated end-to-end: voice command → detection →
-spoken directional guidance, with no screen interaction required
-Demo video: see demo/ folder (or linked Drive submission)
+## Live Detection
 
+*(Add screenshot here)*
 
-Future Scope
+```
+assets/screenshots/demo.png
+```
 
+---
 
-Open-vocabulary detection (e.g. YOLO-World) to recognize arbitrary
-object names beyond COCO's fixed 80 classes
-Personalized object recognition to distinguish "my" bottle from
-someone else's identical one
-True monocular depth estimation for finer-grained distance accuracy,
-replacing the current bounding-box-size proxy
-Door and staircase detection to extend the system toward full indoor
-navigation assistance, not just object-finding
-Offline speech recognition (e.g. Vosk) as a fallback for use without
-an internet connection
+# 📊 Supported Objects
 
+* Bottle
+* Chair
+* Backpack
+* Cell Phone
+* Laptop
+* Cup
+* Book
+* Mouse
+* Keyboard
+* Person
 
-References
+---
 
+# ⚙️ Requirements
 
-Ultralytics YOLOv8 — https://github.com/ultralytics/ultralytics
-COCO Dataset — https://cocodataset.org/
-SpeechRecognition (Python library) — https://github.com/Uberi/speech_recognition
-pyttsx3 (Python library) — https://github.com/nateshmbhat/pyttsx3
+### Hardware
+
+* Webcam
+* Microphone
+* Speaker / Headphones
+* Laptop/Desktop
+
+### Software
+
+* Python 3.10+
+* OpenCV
+* YOLOv8
+* PyTorch
+
+---
+
+# 📈 Future Enhancements
+
+* 🌍 Offline Voice Recognition
+* 👓 Smart Glasses Integration
+* 📱 Android Application
+* 📍 Accurate Depth Estimation
+* 🧭 Indoor Navigation
+* 📖 OCR for Reading Text
+* 🌐 Multi-language Voice Support
+* 📳 Haptic Feedback
+
+---
+
+# 👨‍💻 Team
+
+| Name     | Role                 |
+| -------- | -------------------- |
+| Member 1 | AI & Computer Vision |
+| Member 2 | Backend Development  |
+| Member 3 | UI / Documentation   |
+
+---
+
+# 🏆 HackZen 2026
+
+Developed as part of the **HackZen 2026 Open Challenge**.
+
+Our goal is to leverage Artificial Intelligence and Computer Vision to create accessible technology that empowers visually impaired individuals in their daily lives.
+
+---
+
+# 📜 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project interesting, consider giving it a Star ⭐
+
+**Made with ❤️ using Python, OpenCV & YOLOv8**
+
+</div>
